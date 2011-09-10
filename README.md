@@ -19,9 +19,9 @@ now part of your larger application, and is deployed via the browser.
 
 ##Why Not?##
 
-You are building a public application where its not practical to ask users to install the LocoRuby.exe
-You are a JRuby shop (in which case there are easier ways to do this by creating JRuby applets)
-The local environment is MacOS
+* You are building a public application where its not practical to ask users to install the LocoRuby.exe
+* You are using JRuby in which case there are easier ways to do this by creating JRuby applets.
+* The local environment you want to run on is not windows.
 
 ##Features##
 
@@ -32,7 +32,6 @@ The local environment is MacOS
 * Includes Ruby Debug and Logger for debugging and logging 
 * Includes auto-gui gem to easily drive windows applications
 * Includes FxRuby gem for creating local GUIs (or just use the browser)
-* Secure  (let me know if you see any security holes, but I don't see any)
 
 
 ##Sample Applications##
@@ -41,17 +40,26 @@ The local environment is MacOS
 * Manipulate files on the local machine
 * Manufacturing floor device control
 
+##How to use##
+
+1. On the windows box you will need to be running LocoRuby.exe.  You can save the exe to your public folder, and 
+provide a link and instructions like this:
+
+Before running this page download <a href="">this exe</a> and place it in your startup folder.
+
 ##How it works##
 
-The LocoRuby.exe is simply a webrick server that acts as bootstrap loader.  The browser makes cross browser calls to 
-127.0.0.1:8000 to send the LocoRuby.exe code files.
+The LocoRuby.exe is simply a webrick server that acts as bootstrap loader.  The browser makes cross browser requests to 
+127.0.0.1:8000 to send the LocoRuby.exe code files, which are loaded as anonymous modules.
 
-Bundled in with the LocoRuby.exe are nice to haves such as support for Ruby Debug, Logging, and ability to provide
-status via a LocoRuby system tray icon.
+To keep the LocoRuby.exe as simple as possible it provides nothing but the basic load capability.  Additional features 
+are provided by doing an initial download of code provided from your page script.
 
-Also bundled into the exe is (hopefully) every thing you will ever need on the local machine in the way of gems:  The
-complete ruby standard library; FxRuby gui framework; and a nice gem called auto-gui that makes driving the local 
-windows gui snap.
+
+
+
+
+
 
 ##Server-side code##
 
