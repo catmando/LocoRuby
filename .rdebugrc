@@ -1,0 +1,3 @@
+set autoeval
+set autoreload
+eval LocoRuby::Console.show
