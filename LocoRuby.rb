@@ -9,6 +9,7 @@ require 'fox16'
 require 'irb'
 gem 'ruby-debug', '= 0.10.3'
 require 'ruby-debug'
+require 'optparse'
 
 class Logger  
 	def format_message(level, time, progname, msg)  
@@ -21,6 +22,7 @@ class StoutClientLoader < WEBrick::HTTPServlet::AbstractServlet
 
 	def initialize(server)
 		@window = server[:Window]
+		@key = server[:Key]
 		super
 		@@ready ||= {}
 		@@response_id ||= {}
@@ -51,7 +53,7 @@ class StoutClientLoader < WEBrick::HTTPServlet::AbstractServlet
 			@logger.info "Confirming LocoRuby identity.  Session id: #{request.query['session_id']}"
 			@@response_id[request.query["session_id"]] = response_id = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
 			@@ready[request.query["session_id"]] = nil
-			response.body = "#{request.query['callback']}({session_id: '#{encrypt(request.query["session_id"])}', response_id: '#{response_id}'})"
+			response.body = "#{request.query['callback']}({session_id: '#{LocoRuby::encrypt(request.query["session_id"])}', response_id: '#{response_id}'})"
 			@window.tray_icon_tip_text = "confirming local identity..."
 		end
 	end
@@ -61,10 +63,10 @@ class StoutClientLoader < WEBrick::HTTPServlet::AbstractServlet
 		response.content_type = "text/plain"
 		@logger.info "Request for code load.  Confirming remote server identity"
 		response_id = @@response_id[request.query["session_id"]]
-		unless response_id && request.query["response_id"]==encrypt(response_id)
+		unless response_id && request.query["response_id"]==LocoRuby::encrypt(response_id)
 			response.status = 500
 			response.body = "failed security check."
-			@logger.error "failed security check - theirs/unencrytped/encrypted: #{request.query['response_id']}/#{response_id}/#{encrypt(response_id)}"
+			@logger.error "failed security check - theirs/unencrytped/encrypted: #{request.query['response_id']}/#{response_id}/#{LocoRuby::encrypt(response_id)}"
 			@window.tray_icon_tip_text = "remote server failed security check!"
 			return
 		 end
@@ -79,7 +81,7 @@ class StoutClientLoader < WEBrick::HTTPServlet::AbstractServlet
 		   @logger.info result = load(code_file_name, true) #Class.new.instance_eval { load(code_file_name) }
 		   @logger.info "ready"
 		   @window.tray_icon_tip_text = "code loaded (#{request.query['code'].length} bytes)"
-		   @@ready[request.query["session_id"]] = encrypt(response_id)
+		   @@ready[request.query["session_id"]] = LocoRuby::encrypt(response_id)
 		   response.body = result.to_s
 		 rescue Exception => e
 		   @logger.error "evaluation failed #{e.message} see http response for backtrace"
@@ -88,12 +90,6 @@ class StoutClientLoader < WEBrick::HTTPServlet::AbstractServlet
 		   response.status = 500
 		 end
 	end
-   
-   protected
-   
-   def encrypt(text)
-     Digest::SHA1.hexdigest("--CatPrint is the C00lest!--#{text}--")
-   end
 
 end
 
@@ -174,7 +170,28 @@ end
 end
 if $0 == __FILE__  and !defined?(Ocra)
 module LocoRuby
-	if ARGV.length > 0 && ARGV[0]=="-d" 
+
+	def self.encrypt(text)
+	 if defined?(KEY)
+		Digest::SHA1.hexdigest("--#{KEY}--#{text}--")
+	 else
+		""
+	 end
+	end
+
+	OptionParser.new do |opts|
+		opts.banner = "Usage: LocoRuby [-d] [-kKey]"
+		
+		opts.on("-d", "--debug", "debug mode leave console open") do 
+			DEBUG = true
+		end
+		
+		opts.on("-kKEY", "--key KEY", "use security key") do |key|
+			KEY = key
+		end
+	end.parse!
+	
+	if !defined?(LocoRuby::DEBUG)
 		log = Logger.new(STDOUT)
 		log.level = Logger::DEBUG
 		log.info "LocoRuby Starting.  Debug level = DEBUG"
@@ -183,6 +200,7 @@ module LocoRuby
 		log.level = Logger::INFO
 		log.info "LocoRuby Starting. Debug level = INFO"
 	end
+
 
 	console = ConsoleInternal.new("LocoRuby Console", log)
 	console.tray_icon_tip_text = "mounting server..."
@@ -197,7 +215,8 @@ module LocoRuby
 	  Console = console
 	  Server = server
 	  Log = log
-	  if ARGV.length == 0 or ARGV[0]!="-d" 
+
+	  if !defined?(LocoRuby::DEBUG)
 		console.hide
 	  else
 	    Debugger.start
