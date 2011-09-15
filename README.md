@@ -32,9 +32,10 @@ now part of your larger application, and is deployed via the browser.
 * Includes Ruby Debug and Logger for debugging and logging 
 * Includes auto-gui gem to easily drive windows applications
 * Includes FxRuby gem for creating local GUIs (or just use the browser)
+* Extra security (let me know if you see any holes, or ways to improve)
 
 
-##Sample Applications##
+##Sample Uses##
 
 * Control of legacy windows applications that don't have APIs
 * Manipulate files on the local machine
@@ -42,25 +43,105 @@ now part of your larger application, and is deployed via the browser.
 
 ##How to use##
 
-1. On the windows box you will need to be running LocoRuby.exe.  You can save the exe to your public folder, and 
-provide a link and instructions like this:
+1. On the windows box you will need to be running LocoRuby.exe.  
+2. In your application web page include loco_ruby.js
+3. Call `LocoRuby.init({...})` to setup you application
+4. In your application web page put `<script type="text/ruby">...</script>` blocks to hold your local ruby code
+5. Call `LocoRuby.eval("ruby expression", function(return_value) {...})` to evaluate ruby expressions
 
-Before running this page download <a href="">this exe</a> and place it in your startup folder.
+##Dependencies
+
+JQuery - However if loco_ruby does not detect the JQuery object it will automatically include it so it is not required
+to be included.  If you do use JQuery just include it before you do the LocoRuby include.
 
 ##How it works##
 
 The LocoRuby.exe is simply a webrick server that acts as bootstrap loader.  The browser makes cross browser requests to 
-127.0.0.1:8000 to send the LocoRuby.exe code files, which are loaded as anonymous modules.
+127.0.0.1:8000 to send the LocoRuby.exe the ruby code, which is loaded as anonymous modules.
 
 To keep the LocoRuby.exe as simple as possible it provides nothing but the basic load capability.  Additional features 
-are provided by doing an initial download of code provided from your page script.
+are provided by the loco_ruby.js file which collects the application ruby scripts from the web page, and wraps it up so 
+you can call eval in the context of the downloaded code.
 
+##Simple Example##
 
+This is a simple example that brings up a window showing the current number of bytes used on the disk, updated
+every minute.
 
+```
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Bytes Free</title>
 
+    <script type='text/javascript' src='javascripts/loco_ruby.js'></script>
 
+    <script type='text/javascript'>
+        LocoRuby.init({
+            dimensions: {top: 20, left: 20, width: 150, height: 120},
+            stay_on_top: true,
+            onload: function() {update_display(); setInterval(update_display, 60*1000)}
+        })
 
+        function update_display() {
+            LocoRuby.eval("bytes_free", function (r) {
+                document.body.innerHTML = r
+            })
+        }
 
-##Server-side code##
+    </script>
+
+    <script type='text/ruby'>
+
+        def bytes_free
+            /([0-9]*) bytes free/.match(`dir /-C`)[1]
+        end
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>
+
+##LocoRuby.init Parameters##
+
+LocoRuby.init takes a hash with the following optional keys:
+
+* title: a string that overrides the page title
+* dimensions:  a hash containing left, top, width, and height window position and size
+* stay_on_top:  if true then window will be forced to stay on top of all other windows
+* onload: a function that will be called once the ruby script has been loaded and is ready to go
+* encrypt: a function that digests as string using SHA1.hexdigest, used for extra security checking
+
+Examples
+
+    LocoRuby.init({}) 
+      // run the code in the current window, no security checking.  Same as LocoRuby.init()
+      
+    LocoRuby.init({onload: function(){alert('everything working!')}}) 
+      // pop up an alert once everything is downloaded.
+      
+    LocoRuby.init({dimensions: {top: 50, left: 50, width: 400, height: 400}})
+      // run in a new 400 X 400 popup positioned at 50, 50.  top, left, width, and height must all be supplied.
+      
+    LocoRuby.init({stay_on_top: true, dimensions: {top: 50, left: 50, width: 400, height: 400}})
+      // run in a new popup that stays above all other windows.  stay_on_top is ignored unless dimensions are provided.
+      
+    LocoRuby.init({encrypt: function(s, fn) {
+                jQuery.ajax({
+                    url: "/loco_ruby_encrypt_helper/"+s,
+                    context: document.body,
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert("failed to get encrypted response from server")
+                        },
+                    success: fn
+                    })}})
+      // use a server side REST method to digest strings.   More below on this...
+      
+    LocoRuby.init({title: "My PC App"})
+      // override the page title with "My PC App".
+
 
 
