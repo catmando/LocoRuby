@@ -68,7 +68,7 @@ you can call eval in the context of the downloaded code.
 This is a simple example that brings up a window showing the current number of bytes used on the disk, updated
 every minute.
 
-```
+```html
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -93,18 +93,20 @@ every minute.
     </script>
 
     <script type='text/ruby'>
-
+```    
+```ruby
         def bytes_free
             /([0-9]*) bytes free/.match(`dir /-C`)[1]
         end
-
+```        
+```html
     </script>
 </head>
 <body>
-
+Loading Application... If this message does not go away, then check to see that your browser is not blocking popups.
 </body>
 </html>
-
+```
 ##LocoRuby.init Parameters##
 
 LocoRuby.init takes a hash with the following optional keys:
@@ -115,21 +117,25 @@ LocoRuby.init takes a hash with the following optional keys:
 * onload: a function that will be called once the ruby script has been loaded and is ready to go
 * encrypt: a function that digests as string using SHA1.hexdigest, used for extra security checking
 
-Examples
+###Examples###
 
-    LocoRuby.init({}) 
-      // run the code in the current window, no security checking.  Same as LocoRuby.init()
+```javascript
+LocoRuby.init({}) 
+      // run the code in the current window, no security checking.  Same as LocoRuby.init()  
       
-    LocoRuby.init({onload: function(){alert('everything working!')}}) 
+LocoRuby.init({title: "My PC App"})
+      // override the page title with "My PC App".
+
+LocoRuby.init({onload: function(){alert('everything working!')}}) 
       // pop up an alert once everything is downloaded.
       
-    LocoRuby.init({dimensions: {top: 50, left: 50, width: 400, height: 400}})
+LocoRuby.init({dimensions: {top: 50, left: 50, width: 400, height: 400}})
       // run in a new 400 X 400 popup positioned at 50, 50.  top, left, width, and height must all be supplied.
       
-    LocoRuby.init({stay_on_top: true, dimensions: {top: 50, left: 50, width: 400, height: 400}})
+LocoRuby.init({stay_on_top: true, dimensions: {top: 50, left: 50, width: 400, height: 400}})
       // run in a new popup that stays above all other windows.  stay_on_top is ignored unless dimensions are provided.
       
-    LocoRuby.init({encrypt: function(s, fn) {
+LocoRuby.init({encrypt: function(s, fn) {
                 jQuery.ajax({
                     url: "/loco_ruby_encrypt_helper/"+s,
                     context: document.body,
@@ -139,9 +145,36 @@ Examples
                     success: fn
                     })}})
       // use a server side REST method to digest strings.   More below on this...
-      
-    LocoRuby.init({title: "My PC App"})
-      // override the page title with "My PC App".
 
+```
 
+##Popup Window Management##
+
+One of the features of LocoRuby is that you can create simple windows dialogs that run in the browser, but act like 
+stand alone windows applications.
+
+The trigger for this capability is providing dimensions to the init function.  This lets LocoRuby know that a new
+dialog window is desired.
+
+To accomplish this LocoRuby reloads the current page into a newly created browser popup, 
+which is then sized and optionally forced to stay on top.
+
+Once this is done, we want to get rid of the original browser window, so we either do a back `(history(-1))` or if there
+is no history then just close the original browser window (more on why below.)
+
+Because LocoRuby is not set up to deal nicely with multiple windows running the same "application" it also makes sure
+that any existing popups (of the same application name) are closed before calling onload.
+
+While all this seems complicated it gives a nice user experience.  You can create an application links page
+that links to your LocoRuby popup pages.  When the link is followed the LocoRuby page will be loaded in the same browser 
+window, but then a popup will come up, and the parent window will go back to the original page, thus the popup acts
+like target="_BLANK", but where you can control the size of the new window.
+
+You can also create a windows short-cut where the target is the LocoRuby page.  In this case when a user opens the 
+short-cut a new browser window with no history is created, in which the LocoRuby code will begin to run.  
+Once the popup is created the original window (with no history) an be deleted. 
+
+##Security##
+
+I am not sure if there are any gaping 
 
