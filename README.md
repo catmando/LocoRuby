@@ -1,6 +1,6 @@
 #LocoRuby (easily run local ruby code in a windows browser)#
 
-LocoRuby is a simple way to include `<script type="text/ruby">...</script>` blocks on a 
+LocoRuby is a simple way to include `<script type="text/ruby">...</script>` blocks on a web
 page and execute the code in the local windows environment.
 
 ##Why?##
@@ -26,14 +26,14 @@ now part of your larger application, and is deployed via the browser.
 
 ##Features##
 
-* Simple to setup:  Only requirement is that the local machine is running the LocoRuby.exe, and include ruby_local.js
-* Runs in the browser, write normal HTML / Javascript
+* Simple to setup:  Run LocoRuby.exe on the local machine, and include ruby_local.js in your web page.
+* Runs in the browser, write normal HTML / Javascript to create the client GUI.
 * Add `<script type="text/ruby">` blocks to your pages, and then execute `local_ruby_eval(....)` from javascript
 * Tested in Windows XP and 7 (testing on Vista would be appreciated!)
-* Includes Ruby Debug and Logger for debugging and logging 
-* Includes auto-gui gem to easily drive windows applications
-* Includes FxRuby gem for creating local GUIs (or just use the browser)
-* Extra security (let me know if you see any holes, or ways to improve)
+* Includes Ruby Debug and Logger for debugging and logging. 
+* Includes auto-gui gem to easily drive windows applications.
+* Includes FxRuby gem for creating local complex GUIs.
+* Extra security checking option available. (let me know if you see any holes, or ways to improve)
 
 ##Sample Uses##
 
@@ -43,25 +43,26 @@ now part of your larger application, and is deployed via the browser.
 
 ##How to use##
 
-1. On the windows box you will need to be running LocoRuby.exe.  (You can put in the startup folder for example.)
+1. On the windows box you will need to be running LocoRuby.exe.  (You can put it in the startup folder for example.)
 2. In your application web page include loco_ruby.js
 3. Call `LocoRuby.init({...})` to initialize the javascript.
 4. In your application web page put `<script type="text/ruby">...</script>` blocks to hold your local ruby code
-5. Call `LocoRuby.eval("ruby expression", function(return_value) {...})` to evaluate ruby expressions
+5. Call `LocoRuby.eval(...ruby expression..., function(return_value) {...})` to evaluate ruby expressions
 
 ##Dependencies
 
-JQuery - However if loco_ruby does not detect the JQuery object it will automatically include it so it is not required
-to be included.  If you do use JQuery just include it before you do the LocoRuby include.
+JQuery - However if loco_ruby does not detect the JQuery object it will automatically load it so it is not required
+to be included.  If you do use JQuery just include it before you do the LocoRuby to avoid redundant loads.
 
 ##How it works##
 
 The LocoRuby.exe is simply a webrick server that acts as bootstrap loader.  The browser makes cross browser requests to 
 127.0.0.1:8000 to send the LocoRuby.exe the ruby code, which is loaded as anonymous modules.
 
-To keep the LocoRuby.exe as simple as possible it provides nothing but the basic load capability.  Additional features 
+To keep the LocoRuby.exe as simple as possible it provides nothing but the basic capabilities.  Additional features 
 are provided by the loco_ruby.js file which collects the application ruby scripts from the web page, and wraps it up so 
-you can call eval in the context of the downloaded code.
+you can call eval in the context of the downloaded code.  The loco_ruby.js file also contains all the javascript and
+ruby code needed to manage the popup window interactions.
 
 ##Simple Example##
 
@@ -111,10 +112,10 @@ you are running the LocoRuby.exe and that your browser is blocking popups.
 LocoRuby.init takes a hash with the following optional keys:
 
 * title: a string that overrides the page title
-* dimensions:  a hash containing left, top, width, and height window position and size
-* stay_on_top:  if true then window will be forced to stay on top of all other windows
+* dimensions:  a hash containing left, top, width, and height popup window position and size
+* stay_on_top:  if true then the popup window will be forced to stay on top of all other windows
 * onload: a function that will be called once the ruby script has been loaded and is ready to go
-* encrypt: a function that digests as string using SHA1.hexdigest, used for extra security checking
+* encrypt: a function that digests as salted string using SHA1.hexdigest, used for extra security checking
 
 ###Examples###
 
@@ -167,7 +168,7 @@ makes sure that any existing popups (of the same application name) are closed be
 While all this seems complicated it gives a nice user experience.  You can create an application links page
 that links to your LocoRuby popup pages.  When the link is followed the LocoRuby page will be loaded in the same browser 
 window, but then a popup will come up, and the parent window will go back to the original page, thus the popup acts
-like target="_BLANK", but where you can control the size of the new window.
+like target="_BLANK", where you can control the size of the new window.
 
 You can also create a windows short-cut where the target is the LocoRuby page.  In this case when a user opens the 
 short-cut a new browser window with no history is created, in which the LocoRuby code will begin to run.  
@@ -178,12 +179,17 @@ Once the popup is created the original window (with no history) can be deleted.
 If you want to add additional security you can set up a key on both your server and the local machine.  You must 
 provide a digest function on your server that matches the digest in LocalRuby.
 
-1. On the local machine launch RubyLocal with the `--key your_key` option.  I.e. `RubyLoco --key myspecialkey`
+1. On the local machine launch LocoRuby with the `--key your_key` option.  I.e. `LocoRuby --key myspecialkey`.  If 
+you are launching LocoRuby from a shortcut (.lnk) your can specify the options in the shortcut target, but here is a tip:
+Typically your shortcut link will look like this `"C:/SomeDirectory/LocoRuby.exe"`.  You want to specify the options
+outside the double quotes, i.e `"C:/SomeDirectory/LocoRuby.exe" --key myspecialkey`
 2. On the server provide a service to digest a string
 like this `Digest::SHA1.hexdigest("--#{your_key}--#{some_string}--")` 
-I.e. `Digest::SHA1.hexdigest("--myspecialkey--#{s}--")`
+I.e. `Digest::SHA1.hexdigest("--myspecialkey--#{s}--")` where s is the string to digest typically provided via a get
+request parameter.
 3. Provide an encrypt function to LocalRuby.init.  The function takes a string and a call back.  Make an ajax call to your 
-server routine to encrypt the string and return the digested string.
+server routine to encrypt the string and return the digested string.  See the example above for a typical encrypt
+function.
 
 ##System Tray Icon##
 
@@ -193,12 +199,13 @@ tip text displayed by the icon by writting to the LocoRuby::Console.tray_icon_ti
 
 ##FxRuby##
 
-Should you need a more complex UI, the FxRuby gem is included.  Just require the fox16 in your local ruby script.
+Should you need a more complex UI, the FxRuby gem is included.  Just `require fox16` in your local ruby script.
 
 ##Debug and Logging##
 
 The LocoRuby executable is bundled with ruby debug, so all you have to do is invoke the debugger method.  When the 
-debugger starts a terminal window will be opened on the windows box.  
+debugger starts a terminal window will be opened on the windows box.   You use all the normal debugger features once
+you are in the console. 
 
 Inside your local ruby code you write to the logger via the LocoRuby::Log object.  I.e. `LocoRuby::Log.info "hello!"`. 
 By default the log level is set to info.
@@ -224,6 +231,9 @@ control over the way the popup looks.
 
 Package up the exe with a proper installer that will install the exe, setup the security options, and put it in the
 startup folder.
+
+Make Mac and Unix versions of the LocoRuby exe, and package up the right set up gems that would be needed for local
+machine access.
 
 ##Credits##
 
