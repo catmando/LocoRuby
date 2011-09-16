@@ -5,7 +5,7 @@ page and execute the code in the local windows environment.
 
 ##Why?##
 
-Your ruby project (rails, sinatra whatever) mainly runs as a browser application, but also needs to run a little 
+Lets say your ruby project (rails, sinatra whatever) mainly runs as a browser application, but also needs to run a little 
 script on a windows box.  
 For example to control a legacy application that has no API, or to do some file management in the local environment.
 
@@ -35,7 +35,6 @@ now part of your larger application, and is deployed via the browser.
 * Includes FxRuby gem for creating local GUIs (or just use the browser)
 * Extra security (let me know if you see any holes, or ways to improve)
 
-
 ##Sample Uses##
 
 * Control of legacy windows applications that don't have APIs
@@ -44,9 +43,9 @@ now part of your larger application, and is deployed via the browser.
 
 ##How to use##
 
-1. On the windows box you will need to be running LocoRuby.exe.  
+1. On the windows box you will need to be running LocoRuby.exe.  (You can put in the startup folder for example.)
 2. In your application web page include loco_ruby.js
-3. Call `LocoRuby.init({...})` to setup you application
+3. Call `LocoRuby.init({...})` to initialize the javascript.
 4. In your application web page put `<script type="text/ruby">...</script>` blocks to hold your local ruby code
 5. Call `LocoRuby.eval("ruby expression", function(return_value) {...})` to evaluate ruby expressions
 
@@ -102,7 +101,8 @@ every minute.
     </script>
 </head>
 <body>
-Loading Application... If this message does not go away, then check to see that your browser is not blocking popups.
+Loading Application... If this message does not go away, then check to see that
+you are running the LocoRuby.exe and that your browser is blocking popups.
 </body>
 </html>
 ```
@@ -161,8 +161,8 @@ which is then sized and optionally forced to stay on top.
 Once this is done, we want to get rid of the original browser window, so we either do a back `(history(-1))` or if there
 is no history then just close the original browser window (more on why below.)
 
-Because LocoRuby is not set up to deal nicely with multiple windows running the same "application" it also makes sure
-that any existing popups (of the same application name) are closed before calling onload.
+Because LocoRuby is not currently set up to deal nicely with multiple windows running the same "application" it also 
+makes sure that any existing popups (of the same application name) are closed before calling onload.
 
 While all this seems complicated it gives a nice user experience.  You can create an application links page
 that links to your LocoRuby popup pages.  When the link is followed the LocoRuby page will be loaded in the same browser 
@@ -171,7 +171,7 @@ like target="_BLANK", but where you can control the size of the new window.
 
 You can also create a windows short-cut where the target is the LocoRuby page.  In this case when a user opens the 
 short-cut a new browser window with no history is created, in which the LocoRuby code will begin to run.  
-Once the popup is created the original window (with no history) an be deleted. 
+Once the popup is created the original window (with no history) can be deleted. 
 
 ##Security##
 
@@ -185,12 +185,50 @@ I.e. `Digest::SHA1.hexdigest("--myspecialkey--#{s}--")`
 3. Provide an encrypt function to LocalRuby.init.  The function takes a string and a call back.  Make an ajax call to your 
 server routine to encrypt the string and return the digested string.
 
+##System Tray Icon##
+
+When LocoRuby.exe is running it displays a ruby symbol in the windows system tray.  You can update the 
+tip text displayed by the icon by writting to the LocoRuby::Console.tray_icon_tip_text.  I.e. 
+`LocoRuby::Console.tray_icon_tip_text = "I just wrote this"`
+
+##FxRuby##
+
+Should you need a more complex UI, the FxRuby gem is included.  Just require the fox16 in your local ruby script.
+
+##Debug and Logging##
+
+The LocoRuby executable is bundled with ruby debug, so all you have to do is invoke the debugger method.  When the 
+debugger starts a terminal window will be opened on the windows box.  
+
+Inside your local ruby code you write to the logger via the LocoRuby::Log object.  I.e. `LocoRuby::Log.info "hello!"`. 
+By default the log level is set to info.
+
+Log files are written to the directory containing the LocoRuby executable.  Typically you will want to start a 
+console and run `tail -f debug.log` to view the log file contents.
+
+##Rolling Your Own##
+
+If you want to build your own LocoRuby.exe, you will need to install Ruby on a windows box.  LocoRuby comes in a 
+single .rb file.  Once you are happy you can build a new exe by running Rake.   
+
+##Things to Do##
+
+Make it work with multiple instances of the same application.  To do this is just a matter of skipping the page has
+not changed.
+
+Create a javascript object that contains constants, methods, and instance variables of the local ruby code.  Then we
+can just say LocoRuby.my_local_method instead of using eval.
+
+Instead of using the browser popup, create a webkit based browser window in native UI app.  This would give us better
+control over the way the popup looks.
+
+Package up the exe with a proper installer that will install the exe, setup the security options, and put it in the
+startup folder.
+
 ##Credits##
 
-Lars Christensen for the Ocra Gem used to create the executable
-
-Robert Wahler for the auto-gui gem which is included and makes controlling window's gui apps easy
-
-Also included is the FxRuby gem in case you need to create a richer windows GUI
+Lars Christensen for the Ocra Gem used to create the executable.
+Robert Wahler for the auto-gui gem which is included and makes controlling window's gui apps easy.
+Thanks for the FxRuby gem.
 
 
