@@ -188,6 +188,7 @@ server routine to encrypt the string and return the digested string.
 ##Credits##
 
 Lars Christensen for the Ocra Gem used to create the executable
+
 Robert Wahler for the auto-gui gem which is included and makes controlling window's gui apps easy
 
 Also included is the FxRuby gem in case you need to create a richer windows GUI
