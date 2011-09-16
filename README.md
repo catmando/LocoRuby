@@ -5,7 +5,8 @@ page and execute the code in the local windows environment.
 
 ##Why?##
 
-Your ruby project mainly runs as a browser application, but needs to run a little script on a windows box.  
+Your ruby project (rails, sinatra whatever) mainly runs as a browser application, but also needs to run a little 
+script on a windows box.  
 For example to control a legacy application that has no API, or to do some file management in the local environment.
 
 Yes you can write a ruby script to do this, and even package it up as an windows executable.  Of course you are 
@@ -25,8 +26,8 @@ now part of your larger application, and is deployed via the browser.
 
 ##Features##
 
-* Simple to setup:  Only requirement is that the local machine is running the LocoRuby.exe
-* Works in any browser
+* Simple to setup:  Only requirement is that the local machine is running the LocoRuby.exe, and include ruby_local.js
+* Runs in the browser, write normal HTML / Javascript
 * Add `<script type="text/ruby">` blocks to your pages, and then execute `local_ruby_eval(....)` from javascript
 * Tested in Windows XP and 7 (testing on Vista would be appreciated!)
 * Includes Ruby Debug and Logger for debugging and logging 
@@ -93,13 +94,11 @@ every minute.
     </script>
 
     <script type='text/ruby'>
-```    
-```ruby
+
         def bytes_free
             /([0-9]*) bytes free/.match(`dir /-C`)[1]
         end
-```        
-```html
+
     </script>
 </head>
 <body>
@@ -176,5 +175,12 @@ Once the popup is created the original window (with no history) an be deleted.
 
 ##Security##
 
-I am not sure if there are any gaping 
+If you want to add additional security you can set up a key on both your server and the local machine.
+
+1. On the local machine launch RubyLocal with the `--key your_key` option.  I.e. RubyLoco --key myspecialkey
+2. On the server provide a service to digest a string
+like this `Digest::SHA1.hexdigest("--#{your_key}--#{some_string}--")` 
+I.e. `Digest::SHA1.hexdigest("--myspecialkey--#{s}--")`
+3. Provide an encrypt function to LocalRuby.init.  The function takes a string and a call back.  Encrypt the string
+and return 
 
