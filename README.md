@@ -175,12 +175,21 @@ Once the popup is created the original window (with no history) an be deleted.
 
 ##Security##
 
-If you want to add additional security you can set up a key on both your server and the local machine.
+If you want to add additional security you can set up a key on both your server and the local machine.  You must 
+provide a digest function on your server that matches the digest in LocalRuby.
 
-1. On the local machine launch RubyLocal with the `--key your_key` option.  I.e. RubyLoco --key myspecialkey
+1. On the local machine launch RubyLocal with the `--key your_key` option.  I.e. `RubyLoco --key myspecialkey`
 2. On the server provide a service to digest a string
 like this `Digest::SHA1.hexdigest("--#{your_key}--#{some_string}--")` 
 I.e. `Digest::SHA1.hexdigest("--myspecialkey--#{s}--")`
-3. Provide an encrypt function to LocalRuby.init.  The function takes a string and a call back.  Encrypt the string
-and return 
+3. Provide an encrypt function to LocalRuby.init.  The function takes a string and a call back.  Make an ajax call to your 
+server routine to encrypt the string and return the digested string.
+
+##Credits##
+
+Lars Christensen for the Ocra Gem used to create the executable
+Robert Wahler for the auto-gui gem which is included and makes controlling window's gui apps easy
+
+Also included is the FxRuby gem in case you need to create a richer windows GUI
+
 
