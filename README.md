@@ -148,6 +148,18 @@ LocoRuby.init({encrypt: function(s, fn) {
 
 ```
 
+##Evaluating Local Ruby Code##
+To evaluate an expression in the local ruby environment call 
+`LocoRuby.eval("some ruby expression",optional_call_back, optional_time_out)`.  
+
+The first parameter is a string that will be evaluated in the context of a module made up of any code you have included
+in <script type="text/ruby"> blocks.
+
+The optional_call_back is a javascript function that receives the result of your evaluation as string.  If the
+evaluation times out undefined will be passed to the function.
+
+The optional_time_out (in milliseconds) defaults to 10,000 (10 seconds) if not provided.
+
 ##Popup Window Management##
 
 One of the features of LocoRuby is that you can create simple windows dialogs that run in the browser, but act like 
@@ -224,7 +236,8 @@ Make it work with multiple instances of the same application.  To do this is jus
 not changed.
 
 Create a javascript object that contains constants, methods, and instance variables of the local ruby code.  Then we
-can just say LocoRuby.my_local_method instead of using eval.
+can just say LocoRuby.my_local_method instead of using eval.   Likewise return the result as a jsonp object instead 
+of a string.
 
 Instead of using the browser popup, create a webkit based browser window in native UI app.  This would give us better
 control over the way the popup looks.
