@@ -220,6 +220,8 @@ The LocoRuby executable is bundled with ruby debug, so all you have to do is inv
 debugger starts a terminal window will be opened on the windows box.   You use all the normal debugger features once
 you are in the console. 
 
+You can start the debugger from a javascript console (i.e. firebug) by calling `LocoRuby.debug()`
+
 Inside your local ruby code you write to the logger via the LocoRuby::Log object.  I.e. `LocoRuby::Log.info "hello!"`. 
 By default the log level is set to info.
 
@@ -228,7 +230,8 @@ console and run `tail -f debug.log` to view the log file contents.
 
 ##Rolling Your Own##
 
-If you want to build your own LocoRuby.exe, you will need to install Ruby on a windows box.  LocoRuby comes in a 
+If you want to build your own LocoRuby.exe, you will need to install Ruby on a windows box, and install all the gems.
+LocoRuby comes in a 
 single .rb file.  Once you are happy you can build a new exe by running Rake.   
 
 ##Things to Do##
@@ -252,7 +255,9 @@ machine access.
 ##Credits##
 
 Lars Christensen for the Ocra Gem used to create the executable.
+
 Robert Wahler for the auto-gui gem which is included and makes controlling window's gui apps easy.
+
 Thanks for the FxRuby gem.
 
 
