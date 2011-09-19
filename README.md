@@ -1,7 +1,24 @@
 #LocoRuby (easily run local ruby code in a windows browser)#
 
-LocoRuby is a simple way to include `<script type="text/ruby">...</script>` blocks on a web
-page and execute the code in the local windows environment.
+LocoRuby is a simple way to evaluate local ruby code and include `<script type="text/ruby">...</script>` blocks on a web
+page.
+
+###How easy?###
+
+```html
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Bytes Free</title>
+    <script type='text/javascript' src='javascripts/loco_ruby.js'></script>
+</head>
+<body>
+    <input type="button" value="Bytes Free?"
+           onclick="LocoRuby.eval('/([0-9]*) bytes free/.match(`dir /-C`)[1]', function(r){ alert(r + ' bytes free.')})"/>
+</body>
+</html>
+```
 
 ##Why?##
 
@@ -45,9 +62,9 @@ now part of your larger application, and is deployed via the browser.
 
 1. On the windows box you will need to be running LocoRuby.exe.  (You can put it in the startup folder for example.)
 2. In your application web page include loco_ruby.js (after JQuery if you are using JQuery)
-3. Call `LocoRuby.init({...})` to initialize the javascript.
-4. In your application web page put `<script type="text/ruby">...</script>` blocks to hold your local ruby code
-5. Call `LocoRuby.eval(...ruby expression..., function(return_value) {...})` to evaluate ruby expressions
+3. Optionally call `LocoRuby.init({...})` to override default parameters.
+4. In your application web page put `<script type="text/ruby">...</script>` blocks to hold your local ruby code.
+5. Call `LocoRuby.eval(...ruby expression..., function(return_value) {...})` to evaluate ruby expressions.
 
 ##Dependencies
 
@@ -109,7 +126,7 @@ you are running the LocoRuby.exe and that your browser is blocking popups.
 ```
 ##LocoRuby.init Parameters##
 
-LocoRuby.init takes a hash with the following optional keys:
+Call LocoRuby.init to override any of the defaults. LocoRuby.init takes a hash with the following optional keys:
 
 * title: a string that overrides the page title
 * dimensions:  a hash containing left, top, width, and height popup window position and size
@@ -124,7 +141,7 @@ LocoRuby.init takes a hash with the following optional keys:
 
 ```javascript
 LocoRuby.init({}) 
-      // run the code in the current window, no security checking.  Same as LocoRuby.init()  
+      // run the code in the current window, no security checking.  Same as LocoRuby.init(), or not calling it all.  
       
 LocoRuby.init({title: "My PC App"})
       // override the page title with "My PC App".
@@ -196,6 +213,9 @@ like target="_BLANK", where you can control the size of the new window.
 You can also create a windows short-cut where the target is the LocoRuby page.  In this case when a user opens the 
 short-cut a new browser window with no history is created, in which the LocoRuby code will begin to run.  
 Once the popup is created the original window (with no history) can be deleted. 
+
+During debug you may find dealing with a javascript debugger is incompatible with the popup.  Just change the
+dimension key to something like dimension_off, and it will be ignored, and you won't get a popup.
 
 ##Host and Ports##
 
