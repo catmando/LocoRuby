@@ -252,11 +252,12 @@ single .rb file.  Once you are happy you can build a new exe by running Rake.
 
 ##Things to Do##
 
-Make it work with multiple instances of the same application.  To do this is just a matter of skipping the page has
+Make it work with multiple instances of the same application.  To do this is just a matter of skipping the download if the 
+page has
 not changed.
 
 Create a javascript object that contains constants, methods, and instance variables of the local ruby code.  Then we
-can just say LocoRuby.my_local_method instead of using eval.   Likewise return the result as a jsonp object instead 
+can just say `LocoRuby.my_local_method()` instead of using eval.   Likewise return the result as a jsonp object instead 
 of a string.
 
 Instead of using the browser popup, create a webkit based browser window in native UI app.  This would give us better
