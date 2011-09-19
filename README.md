@@ -105,7 +105,7 @@ every minute.
 
         function update_display() {
             LocoRuby.eval("bytes_free", function (r) {
-                document.body.innerHTML = r
+                document.getElementById("bytes_free") = r/1024
             })
         }
 
@@ -120,8 +120,13 @@ every minute.
     </script>
 </head>
 <body>
-Loading Application... If this message does not go away, then check to see that
-you are running the LocoRuby.exe and that your browser is blocking popups.
+    <div class="LocoRuby_loading">
+        Loading Application... If this message does not go away, then check to see that
+        you are running the LocoRuby.exe and that your browser is not blocking popups.
+    </div>
+    <div class="LocoRuby_loaded">
+        <span id="bytes_free"></span>K bytes free
+    </div>
 </body>
 </html>
 ```
@@ -224,6 +229,11 @@ Once the popup is created the original window (with no history) can be deleted.
 
 During debug you may find dealing with a javascript debugger is incompatible with the popup.  Just change the
 dimension key to something like dimension_off, and it will be ignored, and you won't get a popup.
+
+##The LocoRuby_loading and _loaded classes##
+
+HTML with the LocoRuby_loaded class will remain hidden until the ruby code is up and running.  The LocoRuby_loading 
+class will then be hidden.  Use these classes to display appropriate content before and after loading has completed.
 
 ##Host and Ports##
 
