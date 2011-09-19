@@ -115,6 +115,8 @@ LocoRuby.init takes a hash with the following optional keys:
 * dimensions:  a hash containing left, top, width, and height popup window position and size
 * stay_on_top:  if true then the popup window will be forced to stay on top of all other windows
 * onload: a function that will be called once the ruby script has been loaded and is ready to go
+* connection_failure: a function to be called if the LocoRuby service cannot be contacted.  Defaults to an alert box.
+* verification_failure: a function to be called if the security checks fail. Defaults to an alert box.
 * host: a string with host:port that LocoRuby.exe is listening to. Defaults to 127.0.0.1:8000 if not provided.  
 * encrypt: a function that digests as salted string using SHA1.hexdigest, used for extra security checking
 
@@ -135,6 +137,9 @@ LocoRuby.init({dimensions: {top: 50, left: 50, width: 400, height: 400}})
       
 LocoRuby.init({stay_on_top: true, dimensions: {top: 50, left: 50, width: 400, height: 400}})
       // run in a new popup that stays above all other windows.  stay_on_top is ignored unless dimensions are provided.
+      
+LocoRuby.init({connection_failure: function() {document.title = "CONNECTION FAILURE"}})
+      // change document title instead of bringing up alert.  verfication_failure works the same
       
 LocoRuby.init({host: "127.0.0.1:8001"})
      // use port 8001 instead of 8000.  Note you must run LocoRuby with the matching port. I.e.
