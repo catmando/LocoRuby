@@ -99,7 +99,8 @@ every minute.
         LocoRuby.init({
             dimensions: {top: 20, left: 20, width: 150, height: 120},
             stay_on_top: true,
-            onload: function() {update_display(); setInterval(update_display, 60*1000)}
+            onload: function() {update_display(); setInterval(update_display, 60*1000)},
+            popup_blocked: function() {}
         })
 
         function update_display() {
@@ -129,9 +130,12 @@ you are running the LocoRuby.exe and that your browser is blocking popups.
 Call LocoRuby.init to override any of the defaults. LocoRuby.init takes a hash with the following optional keys:
 
 * title: a string that overrides the page title
-* dimensions:  a hash containing left, top, width, and height popup window position and size
+* dimensions:  a hash containing left, top, width, and height popup window position and size.  
 * stay_on_top:  if true then the popup window will be forced to stay on top of all other windows
+* popup_timeout: how long to wait before guessing that there is a popup blocker running.  Default is 10 seconds.
+* popup_blocked: function to be called if popup_timeout expires.  Default overwrites the document body with a message.
 * onload: a function that will be called once the ruby script has been loaded and is ready to go
+* eval_timeout: how long to wait before we assume that the evaluation has died. Defaults to 10 seconds.
 * connection_failure: a function to be called if the LocoRuby service cannot be contacted.  Defaults to an alert box.
 * verification_failure: a function to be called if the security checks fail. Defaults to an alert box.
 * host: a string with host:port that LocoRuby.exe is listening to. Defaults to 127.0.0.1:8000 if not provided.  
@@ -141,13 +145,16 @@ Call LocoRuby.init to override any of the defaults. LocoRuby.init takes a hash w
 
 ```javascript
 LocoRuby.init({}) 
-      // run the code in the current window, no security checking.  Same as LocoRuby.init(), or not calling it all.  
+      // run the code in the current window, no security checking.  Same as LocoRuby.init(), or not calling it at all.  
       
 LocoRuby.init({title: "My PC App"})
       // override the page title with "My PC App".
 
 LocoRuby.init({onload: function(){alert('everything working!')}}) 
       // pop up an alert once everything is downloaded.
+      
+LocoRuby.init({popup_timeout: 5000, popup_blocked: function () {alert('turn off popup blockers')}})
+     // after 5 seconds if we can't get a popup going, bring up an alert.
       
 LocoRuby.init({dimensions: {top: 50, left: 50, width: 400, height: 400}})
       // run in a new 400 X 400 popup positioned at 50, 50.  top, left, width, and height must all be supplied.
@@ -186,7 +193,8 @@ in `<script type="text/ruby">` blocks.
 The `optional_call_back` is a javascript function that receives the result of your evaluation as string.  If the
 evaluation times out undefined will be passed to the function.
 
-The `optional_time_out` (in milliseconds) defaults to 10,000 (10 seconds) if not provided.
+The `optional_time_out` (in milliseconds) defaults to 10,000 (10 seconds) if not provided.  Can also be overriden
+globally in LocoRuby.init().
 
 ##Popup Window Management##
 
@@ -221,7 +229,9 @@ dimension key to something like dimension_off, and it will be ignored, and you w
 
 By default LocoRuby.exe listens on port 8000, and the LocoRuby javascript object communicates with 127.0.0.1.  To
 listen on a different port run LocoRuby with the --port (-p) option. I.e. `LocoRuby -p8001`.  The LocoRuby js object
-must be initialized for the same host:port using the host: key.  I.e. ...`key: "127.0.0.1:8001"`....
+must be initialized for the same host:port using the host: key.  
+
+I.e. ...`host: "127.0.0.1:8001"`....
 
 ##Security##
 
