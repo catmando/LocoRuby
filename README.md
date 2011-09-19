@@ -28,7 +28,7 @@ now part of your larger application, and is deployed via the browser.
 
 * Simple to setup:  Run LocoRuby.exe on the local machine, and include ruby_local.js in your web page.
 * Runs in the browser, write normal HTML / Javascript to create the client GUI.
-* Add `<script type="text/ruby">` blocks to your pages, and then execute `local_ruby_eval(....)` from javascript
+* Add `<script type="text/ruby">` blocks to your pages, and then execute `LocoRuby.eval(....)` from javascript
 * Tested in Windows XP and 7 (testing on Vista would be appreciated!)
 * Includes Ruby Debug and Logger for debugging and logging. 
 * Includes auto-gui gem to easily drive windows applications.
@@ -44,7 +44,7 @@ now part of your larger application, and is deployed via the browser.
 ##How to use##
 
 1. On the windows box you will need to be running LocoRuby.exe.  (You can put it in the startup folder for example.)
-2. In your application web page include loco_ruby.js
+2. In your application web page include loco_ruby.js (after JQuery if you are using JQuery)
 3. Call `LocoRuby.init({...})` to initialize the javascript.
 4. In your application web page put `<script type="text/ruby">...</script>` blocks to hold your local ruby code
 5. Call `LocoRuby.eval(...ruby expression..., function(return_value) {...})` to evaluate ruby expressions
@@ -115,6 +115,7 @@ LocoRuby.init takes a hash with the following optional keys:
 * dimensions:  a hash containing left, top, width, and height popup window position and size
 * stay_on_top:  if true then the popup window will be forced to stay on top of all other windows
 * onload: a function that will be called once the ruby script has been loaded and is ready to go
+* host: a string with host:port that LocoRuby.exe is listening to. Defaults to 127.0.0.1:8000 if not provided.  
 * encrypt: a function that digests as salted string using SHA1.hexdigest, used for extra security checking
 
 ###Examples###
@@ -135,6 +136,10 @@ LocoRuby.init({dimensions: {top: 50, left: 50, width: 400, height: 400}})
 LocoRuby.init({stay_on_top: true, dimensions: {top: 50, left: 50, width: 400, height: 400}})
       // run in a new popup that stays above all other windows.  stay_on_top is ignored unless dimensions are provided.
       
+LocoRuby.init({host: "127.0.0.1:8001"})
+     // use port 8001 instead of 8000.  Note you must run LocoRuby with the matching port. I.e.
+     // LocoRuby --port 8001
+     
 LocoRuby.init({encrypt: function(s, fn) {
                 jQuery.ajax({
                     url: "/loco_ruby_encrypt_helper/"+s,
@@ -186,6 +191,12 @@ like target="_BLANK", where you can control the size of the new window.
 You can also create a windows short-cut where the target is the LocoRuby page.  In this case when a user opens the 
 short-cut a new browser window with no history is created, in which the LocoRuby code will begin to run.  
 Once the popup is created the original window (with no history) can be deleted. 
+
+##Host and Ports##
+
+By default LocoRuby.exe listens on port 8000, and the LocoRuby javascript object communicates with 127.0.0.1.  To
+listen on a different port run LocoRuby with the --port (-p) option. I.e. `LocoRuby -p8001`.  The LocoRuby js object
+must be initialized for the same host:port using the host: key.  I.e. ...`key: "127.0.0.1:8001"`....
 
 ##Security##
 
