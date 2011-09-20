@@ -224,8 +224,8 @@ window, but then a popup will come up, and the parent window will go back to the
 like target="_BLANK", where you can control the size of the new window.
 
 You can also create a windows short-cut where the target is the LocoRuby page.  In this case when a user opens the 
-short-cut a new browser window with no history is created, in which the LocoRuby code will begin to run.  
-Once the popup is created the original window (with no history) can be deleted. 
+short-cut a new browser window with no history is created, in which the LocoRuby code will begin to run.  Once the 
+popup is created the original window (with no history) can be deleted. 
 
 During debug you may find dealing with a javascript debugger is incompatible with the popup.  Just change the
 dimension key to something like dimension_off, and it will be ignored, and you won't get a popup.
