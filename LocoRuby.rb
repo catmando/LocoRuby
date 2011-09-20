@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'logger'
-#require 'pry'
 require 'win32/autogui'
 require 'win32ole'
 include Autogui::Input
@@ -31,7 +30,11 @@ class StoutClientLoader < WEBrick::HTTPServlet::AbstractServlet
 	def do_GET(request, response)
 		response.status = 200
 		response.content_type = "text/plain"
-		if request.path == "/ready"
+		if request.path == "/console"
+			@window.show
+		elsif request.path == "/debugger"
+			debugger
+		elsif request.path == "/ready"
 		    ready = @@ready[request.query["session_id"]]
 		    @logger.info "Ready Request: "
 			@logger.info "  response_id:       #{request.query["response_id"]}"
@@ -178,6 +181,8 @@ module LocoRuby
 		""
 	 end
 	end
+	
+	port = "8000"
 
 	OptionParser.new do |opts|
 		opts.banner = "Usage: LocoRuby [-d] [-kKey]"
@@ -189,9 +194,13 @@ module LocoRuby
 		opts.on("-kKEY", "--key KEY", "use security key") do |key|
 			KEY = key
 		end
+		
+		opts.on("-pPORT", "--port PORT", "port to listen on defaults to 8000") do |p|
+			port = p
+		end
 	end.parse!
 	
-	if !defined?(LocoRuby::DEBUG)
+	if defined?(LocoRuby::DEBUG)
 		log = Logger.new(STDOUT)
 		log.level = Logger::DEBUG
 		log.info "LocoRuby Starting.  Debug level = DEBUG"
@@ -204,10 +213,12 @@ module LocoRuby
 
 	console = ConsoleInternal.new("LocoRuby Console", log)
 	console.tray_icon_tip_text = "mounting server..."
-	server = WEBrick::HTTPServer.new(:Port => 8000, :Logger => log, :Window => console)
+	server = WEBrick::HTTPServer.new(:Port => port, :Logger => log, :Window => console)
 
 	server.mount "/load_slave", StoutClientLoader
 	server.mount "/ready", StoutClientLoader
+	server.mount "/debugger", StoutClientLoader
+	server.mount "/console", StoutClientLoader
 	
 	log.info "Server mounted.  Starting server now"
 	console.tray_icon_tip_text = "server waiting..."
@@ -217,11 +228,12 @@ module LocoRuby
 	  Log = log
 
 	  if !defined?(LocoRuby::DEBUG)
+#	    Debugger.start
+#	    debugger
+#	  else
 		console.hide
-	  else
-	    Debugger.start
-	    debugger
 	  end
+	  
 	end
     trap "SIGINT" do 
 	  LocoRuby::Log.info "CTL-C Captured"
