@@ -172,6 +172,7 @@ end
 
 end
 if $0 == __FILE__  and !defined?(Ocra)
+
 module LocoRuby
 
 	def self.encrypt(text)
@@ -183,7 +184,8 @@ module LocoRuby
 	end
 	
 	port = "8000"
-
+	open_url = nil
+	
 	OptionParser.new do |opts|
 		opts.banner = "Usage: LocoRuby [-d] [-kKey]"
 		
@@ -198,6 +200,10 @@ module LocoRuby
 		opts.on("-pPORT", "--port PORT", "port to listen on defaults to 8000") do |p|
 			port = p
 		end
+		
+		opts.on("-oURL", "--open URL", "open URL in default browser once LocoRuby has started") do |url|
+		    open_url = url
+		end
 	end.parse!
 	
 	if defined?(LocoRuby::DEBUG)
@@ -210,10 +216,14 @@ module LocoRuby
 		log.info "LocoRuby Starting. Debug level = INFO"
 	end
 
-
 	console = ConsoleInternal.new("LocoRuby Console", log)
 	console.tray_icon_tip_text = "mounting server..."
-	server = WEBrick::HTTPServer.new(:Port => port, :Logger => log, :Window => console)
+	server = WEBrick::HTTPServer.new(
+		:Port => port, 
+		:Logger => log, 
+		:Window => console, 
+		:StartCallback => Proc.new {`start #{open_url}` if open_url}
+		)
 
 	server.mount "/load_slave", StoutClientLoader
 	server.mount "/ready", StoutClientLoader
@@ -228,12 +238,8 @@ module LocoRuby
 	  Log = log
 
 	  if !defined?(LocoRuby::DEBUG)
-#	    Debugger.start
-#	    debugger
-#	  else
 		console.hide
 	  end
-	  
 	end
     trap "SIGINT" do 
 	  LocoRuby::Log.info "CTL-C Captured"
