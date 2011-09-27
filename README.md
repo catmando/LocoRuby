@@ -224,8 +224,8 @@ window, but then a popup will come up, and the parent window will go back to the
 like target="_BLANK", where you can control the size of the new window.
 
 You can also create a windows short-cut where the target is the LocoRuby page.  In this case when a user opens the 
-short-cut a new browser window with no history is created, in which the LocoRuby code will begin to run.  
-Once the popup is created the original window (with no history) can be deleted. 
+short-cut a new browser window with no history is created, in which the LocoRuby code will begin to run.  Once the 
+popup is created the original window (with no history) can be deleted. 
 
 During debug you may find dealing with a javascript debugger is incompatible with the popup.  Just change the
 dimension key to something like dimension_off, and it will be ignored, and you won't get a popup.
@@ -276,13 +276,20 @@ The LocoRuby executable is bundled with ruby debug, so all you have to do is inv
 debugger starts a terminal window will be opened on the windows box.   You use all the normal debugger features once
 you are in the console. 
 
-You can start the debugger from a javascript console (i.e. firebug) by calling `LocoRuby.debug()`
+You can start the debugger from a javascript console (i.e. firebug) by calling `LocoRuby.debug()`.
 
 Inside your local ruby code you write to the logger via the LocoRuby::Log object.  I.e. `LocoRuby::Log.info "hello!"`. 
 By default the log level is set to info.
 
 Log files are written to the directory containing the LocoRuby executable.  Typically you will want to start a 
 console and run `tail -f debug.log` to view the log file contents.
+
+You can also start LocoRuby.exe with the -d (--debugger) option which will set the logging level to DEBUG, write the
+logs to STDOUT (the console) and leave the console window open.
+
+When debugging it is usually good to turn off the popup window feature so you can easily get at your browser 
+debugger.  The simple way to do this is just change the dimensions key to dimensions_off which will be ignored, and
+your application will run in the current browser window.
 
 ##Rolling Your Own##
 
