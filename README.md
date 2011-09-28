@@ -364,4 +364,6 @@ Robert Wahler for the auto-gui gem which is included and makes controlling windo
 
 Thanks for the FxRuby gem.
 
+Thanks to InnoSetup!
+
 
