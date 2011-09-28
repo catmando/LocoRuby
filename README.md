@@ -314,7 +314,9 @@ your application will run in the current browser window.
 
 If you want to build your own LocoRuby.exe, you will need to install Ruby on a windows box, and install all the gems.
 LocoRuby comes in a 
-single .rb file.  Once you are happy you can build a new exe by running Rake.   
+single .rb file.  You will also need to install Innosetup to create the one click installer.  
+
+Once you are happy you can build a new installer exe by running Rake.   
 
 ##Things to Do##
 
@@ -328,9 +330,6 @@ of a string.
 
 Instead of using the browser popup, create a webkit based browser window in native UI app.  This would give us better
 control over the way the popup looks.
-
-Package up the exe with a proper installer that will install the exe, setup the security options, and put it in the
-startup folder.
 
 Make Mac and Unix versions of the LocoRuby exe, and package up the right set up gems that would be needed for local
 machine access.
