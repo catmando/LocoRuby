@@ -6,9 +6,9 @@
   OutputBaseFilename=LocoRuby
 
   [Icons]
-  Name: "{code:GetIconName}\{code:GetIconName}"; Filename: "{app}\locoruby.exe"; Parameters: "{code:GetCommandLineParameters}"
+  Name: "{group}\{code:GetIconName}"; Filename: "{app}\locoruby.exe"; Parameters: "{code:GetCommandLineParameters}"
   Name: "{commonstartup}\{code:GetIconName}"; Filename: "{app}\locoruby.exe"; Parameters: "{code:GetCommandLineParameters}"
-  Name: "{code:GetIconName}\Uninstall LocoRuby"; Filename: "{uninstallexe}"
+  Name: "{group}\Uninstall LocoRuby"; Filename: "{uninstallexe}"
 
   [Code]
 var
