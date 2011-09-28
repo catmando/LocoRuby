@@ -279,6 +279,9 @@ function.
 In many cases you will be using LocoRuby to simply provide the local "drivers" for a specific webpage.  In this case
 you can provide the url of the webpage via the -o (--open) option.  I.e. `LocoRuby -o"www.mysite.com/some_local_app_page"`.
 
+When LocoRuby starts the webpage you specify will be opened, so you now effectively have a PC app, whose code resides 
+on your server.
+
 ##System Tray Icon##
 
 When LocoRuby.exe is running it displays a ruby symbol in the windows system tray.  You can update the 
