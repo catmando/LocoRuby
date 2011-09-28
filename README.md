@@ -43,7 +43,7 @@ now part of your larger application, and is deployed via the browser.
 
 ##Features##
 
-* Simple to setup:  Run LocoRuby.exe on the local machine, and include ruby_local.js in your web page.
+* Simple to setup:  Install LocoRuby (using windows one click installer), and include ruby_local.js in your web page.
 * Runs in the browser, write normal HTML / Javascript to create the client GUI.
 * Add `<script type="text/ruby">` blocks to your pages, and then execute `LocoRuby.eval(....)` from javascript
 * Tested in Windows XP and 7 (testing on Vista would be appreciated!)
@@ -60,7 +60,7 @@ now part of your larger application, and is deployed via the browser.
 
 ##How to use##
 
-1. On the windows box you will need to be running LocoRuby.exe.  (You can put it in the startup folder for example.)
+1. Run LocoRuby.exe to install on your windows box.  
 2. In your application web page include loco_ruby.js (after JQuery if you are using JQuery)
 3. Optionally call `LocoRuby.init({...})` to override default parameters.
 4. In your application web page put `<script type="text/ruby">...</script>` blocks to hold your local ruby code.
@@ -186,6 +186,20 @@ LocoRuby.init({encrypt: function(s, fn) {
       // use a server side REST method to digest strings.   More below on this...
 
 ```
+##Running the Windows Installer##
+
+Download LocoRuby.exe and run it.  You can simply click through the options pages and you will have a vanilla install
+that starts LocoRuby when the PC starts up, and listens on port 8000, with no security code.  
+
+You may also setup the following options:
+
+* name of the LocoRuby application shortcuts and program directory
+* port that LocoRuby will listen to (-p option)
+* the security salt key (-k option)
+* a web page that will be brought up when LocoRuby starts (-o option)
+
+The options are sent through as command line options in the shortcuts set up via the installer.  See below for details 
+on the options.
 
 ##Evaluating Local Ruby Code##
 
@@ -260,6 +274,11 @@ request parameter.
 server routine to encrypt the string and return the digested string.  See the example above for a typical encrypt
 function.
 
+##Open Browser Window on Startup##
+
+In many cases you will be using LocoRuby to simply provide the local "drivers" for a specific webpage.  In this case
+you can provide the url of the webpage via the -o (--open) option.  I.e. `LocoRuby -o"www.mysite.com/some_local_app_page"`.
+
 ##System Tray Icon##
 
 When LocoRuby.exe is running it displays a ruby symbol in the windows system tray.  You can update the 
@@ -315,6 +334,25 @@ startup folder.
 
 Make Mac and Unix versions of the LocoRuby exe, and package up the right set up gems that would be needed for local
 machine access.
+
+##MIT License##
+
+Copyright (c) 2011 CatPrintLabs.com
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and 
+associated documentation files (the "Software"), to deal in the Software without restriction, including 
+without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the 
+following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions 
+of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO 
+THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+IN THE SOFTWARE.
 
 ##Credits##
 
